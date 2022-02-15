@@ -38,8 +38,7 @@ async function main() {
 function rewriteMailContentAndSendMail(file, mail_subject, user_name, user_email) {
   fs.readFile(file + ".html", 'utf8', function (err, data) {
     if (err) {
-      console.log(err);
-      return null;
+      throw Error(err);
     }
 
     //replace placeholder with user data
@@ -56,7 +55,7 @@ async function sendMail(user_email, mail_subject, mail_content){
   //create reuseable transporter for SMTP transporter
   let transporter = mailer.createTransport({
     host: env.MAIL_SMTP_HOST,
-    port: 587,
+    port: env.MAIL_SMTP_PORT,
     secure: false, // true for 465, false for other ports
     auth: {
       user: env.MAIL_ADRESS,
@@ -74,6 +73,7 @@ async function sendMail(user_email, mail_subject, mail_content){
 
   // log if message was send
   console.log("Message sent: %s", info.messageId);
+  console.log("Send to:" + user_email + " type:" + env.APPWRITE_FUNCTION_EVENT);
 };
 
 main().catch(console.error);
