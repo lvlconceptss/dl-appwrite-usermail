@@ -1,0 +1,30 @@
+{
+  "name": "dl-appwrite-usermail",
+  "version": "1.0.0",
+  "description": "An appwrite function to send emails triggered by a specific event",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deine-Landschaft/dl-appwrite-usermail.git"
+  },
+  "keywords": [
+    "deine-Landschaft",
+    "appwrite",
+    "appwrite function",
+    "mail"
+  ],
+  "author": "deine-Landschaft",
+  "license": "GNU GPLv3",
+  "bugs": {
+    "url": "https://github.com/deine-Landschaft/dl-appwrite-usermail/issues"
+  },
+  "homepage": "https://github.com/deine-Landschaft/dl-appwrite-usermail#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "fs": "^0.0.1-security",
+    "nodemailer": "^6.7.2"
+  }
+}
