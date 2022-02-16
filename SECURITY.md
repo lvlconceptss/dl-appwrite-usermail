@@ -2,4 +2,4 @@
 
 ## Reporting a Vulnerability
 
-Create a Issue with the **bug** label and describe what is wrong.
+Create a Issue with the **Bug report** template and describe what is wrong.
