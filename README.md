@@ -10,19 +10,23 @@ In this repository is a [Node.js](https://nodejs.org/) project that uses [Appwri
 
 ## Installation
 1. Clone this repo
-2. rename `.env.example` to `.env`
-3. add your data to envioment variable in `.env` 
-4. customize the mail layouts in `/templates` and variables in `/src/app.js`
-5. Create a `.tar.gz` archive from your project (On UNIX: `tar -zcvf dl-appwrite-mail.tar.gz dl-appwrite-mail`)
-6. Go to `[appwrite instance]/[project]/Functions` and click on **Add Function**
-    - Give the function a name (e.g. `user mail service`) and select the `Node.js 16.0` runtime
-    - After creating, go into the new function and click on **Deploy Tag** and click on **Manual**
-    - In the **Command** field write `npm run start`
-    - Add your `.tar.gz` archive to the **Gzipped Code (tar.gz file)** field.
-    - Click **Create**
-    - Click **Activate**
-7. Go to function **Settings**
+2. Customize the mail layouts in `/templates` and variables in `/src/app.js`
+3. Deploy the code as a function over the [appwrite-cli](https://appwrite.io/docs/command-line)
+    ```bash
+    appwrite functions createDeployment \
+    --functionId=[YOUR_FUNCTION_ID] \
+    --activate=true \
+    --entrypoint="/src/app.js" \
+    --code="[/myrepo/myfunction]"
+    ```
+4. Go to function **Settings** on your appwrite instance
     - Select the **Events**: `users.update.email`, `users.create` and `users.delete`.
+    - Add important variables:
+        - **MAIL_NAME** : This is the name from the sender
+        - **MAIL_ADRESS** : mail adress from sender
+        - **MAIL_PASSWORD** : password to connect to mailserver
+        - **MAIL_SMTP_HOST** : SMTP Host
+        - **MAIL_SMTP_PORT** : SMTP Port
     - Click on **Update**
 
 Now, if a user is created, deleted or changed to a new email, he will receive an email about this event.

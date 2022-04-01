@@ -1,24 +1,24 @@
 var fs = require('fs');
+const { promisify } = require('util');
+const readFile = promisify(fs.readFile);
 const path = require('path');
 require('dotenv').config()
 "use strict";
 
 const mailer = require("nodemailer");
-const env = process.env;
 var template_path = path.join(__dirname, '../templates/');
 
-
-async function main() {
+module.exports = async (request, response) => {
   //get the current event
-  var event = env.APPWRITE_FUNCTION_EVENT;
+  const env = request.env;
 
   //get data from user
-  const appwrite_data = JSON.parse(env.APPWRITE_FUNCTION_EVENT_DATA)
-  var user_email = appwrite_data['email'];
-  var user_name = appwrite_data['name'];
+  const data = JSON.parse(env.APPWRITE_FUNCTION_EVENT_DATA)
+  var user_email = data['email'];
+  var user_name = data['name'];
   var mail_subject;
 
-  switch(event){
+  switch(env.APPWRITE_FUNCTION_EVENT){
     case "users.create":
       mail_subject = "CHANGE THIS SUBJECT";
       break;
@@ -32,26 +32,23 @@ async function main() {
       throw Error("event is not implemented");
   }
 
-  rewriteMailContentAndSendMail(template_path + event, mail_subject, user_name, user_email);
+  const mail = await rewriteMailContent(template_path + env.APPWRITE_FUNCTION_EVENT, mail_subject, user_name, env);
+  const log = await sendMail(user_email, mail_subject, mail, env);
+  response.json(log);
 }
 
-function rewriteMailContentAndSendMail(file, mail_subject, user_name, user_email) {
-  fs.readFile(file + ".html", 'utf8', function (err, data) {
-    if (err) {
-      throw Error(err);
-    }
-
+async function rewriteMailContent(file, mail_subject, user_name, env) {
+  let content = await readFile(file + ".html", 'utf8');
+  if (content !== null) {
     //replace placeholder with user data
-    data = data.replace("{SUBJECT}", mail_subject);
-    data = data.replace("{NAME}", user_name);
+    content = content.replace("{SUBJECT}", mail_subject);
+    content = content.replace("{NAME}", user_name);
 
-    if (data !== null && mail_subject !== null && user_email !== null) {
-      sendMail(user_email, mail_subject, data);
-    }
-  });
+    return content;
+  }
 };
 
-async function sendMail(user_email, mail_subject, mail_content){
+async function sendMail(user_email, mail_subject, mail_content, env){
   //create reuseable transporter for SMTP transporter
   let transporter = mailer.createTransport({
     host: env.MAIL_SMTP_HOST,
@@ -72,8 +69,5 @@ async function sendMail(user_email, mail_subject, mail_content){
   });
 
   // log if message was send
-  console.log("Message sent: %s", info.messageId);
-  console.log("Send to:" + user_email + " type:" + env.APPWRITE_FUNCTION_EVENT);
+  return "Message sent: %s", info.messageId + "\n Send to:" + user_email + " type:" + env.APPWRITE_FUNCTION_EVENT;
 };
-
-main().catch(console.error);
