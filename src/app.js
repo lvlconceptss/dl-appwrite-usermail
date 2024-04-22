@@ -51,12 +51,12 @@ async function rewriteMailContent(file, mail_subject, user_name, env) {
 async function sendMail(user_email, mail_subject, mail_content, env){
   //create reuseable transporter for SMTP transporter
   let transporter = mailer.createTransport({
-    host: env.MAIL_SMTP_HOST,
-    port: env.MAIL_SMTP_PORT,
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: env.MAIL_ADRESS,
-      pass: env.MAIL_PASSWORD,
+      user: env.SMTP_EMAIL,
+      pass: env.SMTP_PASSWORD,
     },
   });
 
